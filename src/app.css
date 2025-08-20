@@ -1,0 +1,15 @@
+.gradientText{
+    background: linear-gradient(90deg,#00dbde,#fc00ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.gradientBg{
+    background: linear-gradient(90deg,#00dbde,#fc00ff);
+}
+
+.boxShadow{
+    box-shadow: '20px 20px 50px rgba(0,0,0,0.5)';
+}
+input:hover ~ label {
+transform: translateY(-100px);
+}
