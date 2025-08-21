@@ -15,6 +15,6 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/sonu-lodhi/react-p.git'
             }
         }
-
+    }
      
 }
