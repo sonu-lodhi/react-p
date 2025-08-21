@@ -16,40 +16,5 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'npm test -- --watchAll=false'
-            }
-        }
-
-        stage('Build React App') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh '''
-                  rm -rf $DEPLOY_DIR/*
-                  cp -r build/* $DEPLOY_DIR/
-                '''
-            }
-        }
-    }
-
-    post {
-        success {
-            echo "✅ Deployment Successful! Visit your React app."
-        }
-        failure {
-            echo "❌ Build/Deployment Failed!"
-        }
-    }
+     
 }
