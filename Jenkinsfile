@@ -1,20 +1,29 @@
+
 pipeline {
     agent any
 
-    tools {
-        nodejs "Nodev22.7.0"   // NodeJS version configured in Jenkins (Global Tool Configuration)
+     tools {
+        nodejs "Nodev22.7.0" 
     }
-
-    environment {
+     environment {
         DEPLOY_DIR = "/var/www/react-jenkins-demo"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Hello') {
             steps {
-                git branch: 'master', url: 'https://github.com/sonu-lodhi/react-p.git'
+                echo 'Hello World'
+            }
+        }
+        
+        stage('Git Checkout') {
+        steps {
+            git branch: 'master', url: 'https://github.com/sonu-lodhi/react-p.git'
             }
         }
     }
-     
+    
+    
+    
+    
 }
