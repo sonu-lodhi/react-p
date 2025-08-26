@@ -216,8 +216,8 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME   = 'raectApp2'
-        IMAGE_NAME = 'reactapps'        // local image name
+        APP_NAME   = 'raectApp4'
+        IMAGE_NAME = 'reactapps1'        // local image name
         RUN_PORT   = '80'               // serve on http://localhost/
         GIT_BRANCH = 'master'           // change to 'main' if needed
     }

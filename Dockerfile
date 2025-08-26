@@ -34,19 +34,28 @@
 # CMD ["nginx", "-g", "daemon off;"]
 
 # -------- Stage 1: Build React app ----------
-FROM node:18-alpine AS build
+# FROM node:18-alpine AS build
+# WORKDIR /app
+# COPY ./package.json /app
+# RUN npm install
+# COPY . /app 
+# RUN npm run build
+# CMD [ "npm", "start" ]
+
+#----------------------------
+FROM node:alpine
 WORKDIR /app
 COPY ./package.json /app
 RUN npm install
-COPY . /app 
-# RUN npm run build
+COPY . /app
 CMD [ "npm", "start" ]
+#--------------------------------
 
 # -------- Stage 2: Serve with Nginx ----------
-FROM nginx:alpine
-# optional: remove default nginx page
-RUN rm -rf /usr/share/nginx/html/*
-COPY --from=build /app/build /usr/share/nginx/html
-EXPOSE 80
-HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost/ || exit 1
-CMD ["nginx", "-g", "daemon off;"]
+# FROM nginx:alpine
+# # optional: remove default nginx page
+# RUN rm -rf /usr/share/nginx/html/*
+# COPY --from=build /app/build /usr/share/nginx/html
+# EXPOSE 80
+# HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://localhost/ || exit 1
+# CMD ["nginx", "-g", "daemon off;"]
