@@ -39,7 +39,7 @@ WORKDIR /app
 COPY ./package.json /app
 RUN npm install
 COPY . /app 
-RUN npm run build
+# RUN npm run build
 CMD [ "npm", "start" ]
 
 # -------- Stage 2: Serve with Nginx ----------
