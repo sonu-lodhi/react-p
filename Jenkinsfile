@@ -217,7 +217,7 @@ pipeline {
 
     environment {
         APP_NAME   = 'raectApp4'
-        IMAGE_NAME = 'reactapps1'        // local image name
+        IMAGE_NAME = 'reactapps1'       // local image name
         RUN_PORT   = '80'               // serve on http://localhost/
         GIT_BRANCH = 'master'           // change to 'main' if needed
     }
@@ -260,13 +260,18 @@ pipeline {
 
         // Containerization (multi-stage build uses its own Node anyway)
         //docker build -f Dockerfile.dev -t reactapps1 .
+        
         stage('Docker Build Image') {
+
             steps {
+              // bat """
+                // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+                // """
                 bat """
-                docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+                docker build -t %IMAGE_NAME%:latest .
                 """
             }
-        }
+        } 
 
         stage('Deploy (Replace Container)') {
             when { branch env.GIT_BRANCH } // only deploy on main branch
@@ -276,8 +281,11 @@ pipeline {
                 bat 'docker rm %APP_NAME% || echo "Container not found"'
 
                 // Run fresh container on port 80
-                bat """
-                docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+                // bat """
+                // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+                // """
+                bat """ 
+                docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
                 """
 
                 // Optional: clean dangling images to save disk
