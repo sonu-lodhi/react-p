@@ -1,9 +1,11 @@
-FROM node:alpine
+# -------- Stage 1: Build React App ----------
+FROM node:18-alpine AS build
+
 WORKDIR /app
-COPY ./package.json /app
-RUN npm install
-COPY . /app
-CMD [ "npm", "start" ]
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
 
 # -------- Stage 2: Serve with Nginx ----------

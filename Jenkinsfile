@@ -247,8 +247,11 @@ pipeline {
             steps { bat 'npm ci' } // faster & reproducible
         }
 
-        stage('Build App') {
-            steps { bat 'npm run build' }
+        stage('Install & Build App') {
+            steps { 
+              bat 'npm install'
+              bat 'npm run build'
+             }
         }
 
         stage('Run Tests') {
@@ -256,6 +259,7 @@ pipeline {
         }
 
         // Containerization (multi-stage build uses its own Node anyway)
+        //docker build -f Dockerfile.dev -t reactapps1 .
         stage('Docker Build Image') {
             steps {
                 bat """
