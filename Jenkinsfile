@@ -269,8 +269,11 @@ pipeline {
                 // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
                               // docker build -t %IMAGE_NAME%:latest .
                 // """
+                // bat """
+                // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
+                // """
                 bat """
-                docker build -f Dockerfile -t %IMAGE_NAME%:latest .
+                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
                 """
             }
         } 
@@ -279,19 +282,28 @@ pipeline {
             when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
                 // Stop & remove old container if present; ignore errors if not running
-                bat 'docker stop %APP_NAME% || echo "Container not running"'
-                bat 'docker rm %APP_NAME% || echo "Container not found"'
+                // bat 'docker stop %APP_NAME% || echo "Container not running"'
+                // bat 'docker rm %APP_NAME% || echo "Container not found"'
 
                 // Run fresh container on port 80
                 // bat """
                 // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
                 //docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
                 // """
-                bat """ 
-                docker run -it --name %APP_NAME% -p 3000:3000 %IMAGE_NAME%:latest
-                """
+                // bat """ 
+                // docker run -it --name %APP_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                // """
 
                 // Optional: clean dangling images to save disk
+                // bat 'docker image prune -f || echo "prune skipped"'
+
+                bat 'docker stop %APP_NAME% || echo "Container not running"'
+                bat 'docker rm %APP_NAME% || echo "Container not found"'
+
+                bat """
+                    docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+                """
+
                 bat 'docker image prune -f || echo "prune skipped"'
             }
         }
