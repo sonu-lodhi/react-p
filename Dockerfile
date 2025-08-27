@@ -25,7 +25,8 @@ WORKDIR /app
 COPY ./package.json /app
 RUN npm install
 COPY . /app
-RUN npm run build
+CMD ["npm", "start"]
+# RUN npm run build
 
 # Serve using nginx
 FROM nginx:alpine
