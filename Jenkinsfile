@@ -262,7 +262,7 @@ pipeline {
             steps {
                 script {
                     // Stop the container if it's running
-                    sh """
+                    bat """
                         if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
                             echo "Stopping container ${CONTAINER_NAME}..."
                             docker stop ${CONTAINER_NAME}
@@ -282,7 +282,7 @@ pipeline {
             steps {
                 script {
                     // Remove the image if it exists
-                    sh """
+                    bat """
                         if [ \$(docker images -q ${IMAGE_NAME}) ]; then
                             echo "Removing image ${IMAGE_NAME}..."
                             docker rmi -f ${IMAGE_NAME}
