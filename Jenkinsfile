@@ -299,15 +299,24 @@ pipeline {
         }
 
 
-        stage('Docker Build Image') {
+        // stage('Docker Build Image') {
+        //     steps {
+        //         script {
+        //             bat """
+        //             echo Building new Docker image...
+        //             docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+        //             """
+        //         }
+        //     }
+        // }
+
+        stage('Deploy (Replace Container)') {
+            when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
-                script {
-                    bat """
-                    echo Building new Docker image...
-                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-                    """
-                }
-            }
+              bat """ 
+                docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                """
+                 }
         }
 
 
@@ -331,9 +340,9 @@ pipeline {
         //     }
         // } 
 
-        stage('Deploy (Replace Container)') {
-            when { branch env.GIT_BRANCH } // only deploy on main branch
-            steps {
+        // stage('Deploy (Replace Container)') {
+        //     when { branch env.GIT_BRANCH } // only deploy on main branch
+        //     steps {
     //             // Stop & remove old container if present; ignore errors if not running
     //             // bat 'docker stop %APP_NAME% || echo "Container not running"'
     //             // bat 'docker rm %APP_NAME% || echo "Container not found"'
@@ -343,9 +352,9 @@ pipeline {
     //             // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
     //             //docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
     //             // """
-                bat """ 
-                docker run -it --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
-                """
+                // bat """ 
+                // docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                // """
 
     //             // Optional: clean dangling images to save disk
     //             // bat 'docker image prune -f || echo "prune skipped"'
@@ -358,8 +367,8 @@ pipeline {
                 // """
 
     //             bat 'docker image prune -f || echo "prune skipped"'
-            }
-        }
+        //     }
+        // }
      }
 
     post {
