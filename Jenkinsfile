@@ -342,7 +342,7 @@ pipeline {
     //             bat 'docker image prune -f || echo "prune skipped"'
     //         }
     //     }
-    // }
+     }
 
     post {
         success {
