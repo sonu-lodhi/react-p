@@ -263,13 +263,13 @@ pipeline {
                 script {
                     bat """
                     REM === Stop the container if running ===
-                    FOR /F "tokens=*" %%i IN ('docker ps -q -f name=%CONTAINER_NAME%') DO (
+                    FOR /F "tokens=*" %%i IN ('docker ps -q -f "name=%CONTAINER_NAME%"') DO (
                         echo Stopping container %CONTAINER_NAME%...
                         docker stop %CONTAINER_NAME%
                     )
 
                     REM === Remove the container if exists ===
-                    FOR /F "tokens=*" %%i IN ('docker ps -a -q -f name=%CONTAINER_NAME%') DO (
+                    FOR /F "tokens=*" %%i IN ('docker ps -a -q -f "name=%CONTAINER_NAME%"') DO (
                         echo Removing container %CONTAINER_NAME%...
                         docker rm %CONTAINER_NAME%
                     )
