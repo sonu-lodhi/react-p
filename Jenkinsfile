@@ -263,16 +263,20 @@ pipeline {
                 script {
                     bat """
                     REM === Stop the container if running ===
-                    FOR /F "tokens=*" %%i IN ('docker ps -q -f "name=%CONTAINER_NAME%"') DO (
+                    docker ps -q -f "name=%CONTAINER_NAME%" > tmp.txt
+                    for /F %%i in (tmp.txt) do (
                         echo Stopping container %CONTAINER_NAME%...
-                        docker stop %CONTAINER_NAME%
+                        docker stop %CONTAINER_NAME% || exit /b 0
                     )
 
                     REM === Remove the container if exists ===
-                    FOR /F "tokens=*" %%i IN ('docker ps -a -q -f "name=%CONTAINER_NAME%"') DO (
+                    docker ps -a -q -f "name=%CONTAINER_NAME%" > tmp.txt
+                    for /F %%i in (tmp.txt) do (
                         echo Removing container %CONTAINER_NAME%...
-                        docker rm %CONTAINER_NAME%
+                        docker rm %CONTAINER_NAME% || exit /b 0
                     )
+
+                    del tmp.txt
                     """
                 }
             }
@@ -283,38 +287,53 @@ pipeline {
                 script {
                     bat """
                     REM === Remove the image if it exists ===
-                    FOR /F "tokens=*" %%i IN ('docker images -q %IMAGE_NAME%') DO (
+                    docker images -q %IMAGE_NAME% > tmp.txt
+                    for /F %%i in (tmp.txt) do (
                         echo Removing image %IMAGE_NAME%...
-                        docker rmi -f %IMAGE_NAME%
+                        docker rmi -f %IMAGE_NAME% || exit /b 0
                     )
+                    del tmp.txt
                     """
                 }
             }
         }
 
+
+        stage('Docker Build Image') {
+            steps {
+                script {
+                    bat """
+                    echo Building new Docker image...
+                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+                    """
+                }
+            }
+        }
+
+
         // Containerization (multi-stage build uses its own Node anyway)
         //docker build -f Dockerfile.dev -t reactapps1 .
         
         
-        stage('Docker Build Image') {
+        // stage('Docker Build Image') {
 
-            steps {
-              // bat """
+        //     steps {
+               // bat """
                 // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
                               // docker build -t %IMAGE_NAME%:latest .
                 // """
                 // bat """
                 // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
                 // """
-                bat """
-                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-                """
-            }
-        } 
+        //         bat """
+        //             docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+        //         """
+        //     }
+        // } 
 
-    //     stage('Deploy (Replace Container)') {
-    //         when { branch env.GIT_BRANCH } // only deploy on main branch
-    //         steps {
+        stage('Deploy (Replace Container)') {
+            when { branch env.GIT_BRANCH } // only deploy on main branch
+            steps {
     //             // Stop & remove old container if present; ignore errors if not running
     //             // bat 'docker stop %APP_NAME% || echo "Container not running"'
     //             // bat 'docker rm %APP_NAME% || echo "Container not found"'
@@ -324,9 +343,9 @@ pipeline {
     //             // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
     //             //docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
     //             // """
-    //             // bat """ 
-    //             // docker run -it --name %APP_NAME% -p 3000:3000 %IMAGE_NAME%:latest
-    //             // """
+                bat """ 
+                docker run -it --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                """
 
     //             // Optional: clean dangling images to save disk
     //             // bat 'docker image prune -f || echo "prune skipped"'
@@ -334,13 +353,13 @@ pipeline {
     //             bat 'docker stop %CONTAINER_NAME% || echo "Container not running"'
     //             bat 'docker rm %CONTAINER_NAME% || echo "Container not found"'
 
-    //             bat """
-    //                 docker run -d --name %CONTAINER_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
-    //             """
+                // bat """
+                //     docker run -d --name %CONTAINER_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+                // """
 
     //             bat 'docker image prune -f || echo "prune skipped"'
-    //         }
-    //     }
+            }
+        }
      }
 
     post {
