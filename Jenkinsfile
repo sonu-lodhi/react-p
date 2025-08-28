@@ -314,7 +314,7 @@ pipeline {
             when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
               bat """ 
-                docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                docker run -d --restart always --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
                 """
                  }
         }
