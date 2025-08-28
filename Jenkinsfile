@@ -261,37 +261,36 @@ pipeline {
         stage('Stop & Remove Docker Container') {
             steps {
                 script {
-                    // Stop the container if it's running
                     bat """
-                        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
-                            echo "Stopping container ${CONTAINER_NAME}..."
-                            docker stop ${CONTAINER_NAME}
-                        fi
+                    REM === Stop the container if running ===
+                    FOR /F "tokens=*" %%i IN ('docker ps -q -f name=%CONTAINER_NAME%') DO (
+                        echo Stopping container %CONTAINER_NAME%...
+                        docker stop %CONTAINER_NAME%
+                    )
 
-                        if [ \$(docker ps -aq -f name=${CONTAINER_NAME}) ]; then
-                            echo "Removing container ${CONTAINER_NAME}..."
-                            docker rm ${CONTAINER_NAME}
-                        fi
+                    REM === Remove the container if exists ===
+                    FOR /F "tokens=*" %%i IN ('docker ps -a -q -f name=%CONTAINER_NAME%') DO (
+                        echo Removing container %CONTAINER_NAME%...
+                        docker rm %CONTAINER_NAME%
+                    )
                     """
                 }
             }
         }
-
 
         stage('Remove Docker Image') {
             steps {
                 script {
-                    // Remove the image if it exists
                     bat """
-                        if [ \$(docker images -q ${IMAGE_NAME}) ]; then
-                            echo "Removing image ${IMAGE_NAME}..."
-                            docker rmi -f ${IMAGE_NAME}
-                        fi
+                    REM === Remove the image if it exists ===
+                    FOR /F "tokens=*" %%i IN ('docker images -q %IMAGE_NAME%') DO (
+                        echo Removing image %IMAGE_NAME%...
+                        docker rmi -f %IMAGE_NAME%
+                    )
                     """
                 }
             }
         }
-
 
         // Containerization (multi-stage build uses its own Node anyway)
         //docker build -f Dockerfile.dev -t reactapps1 .
