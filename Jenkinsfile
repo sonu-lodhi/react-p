@@ -216,8 +216,8 @@ pipeline {
     agent any
 
     environment {
-        APP_NAME   = 'raectApp8'
-        IMAGE_NAME = 'reactapps3'       // local image name
+        CONTAINER_NAME   = 'raectApp'
+        IMAGE_NAME = 'reactapps'       // local image name
         RUN_PORT   = '80'               // serve on http://localhost/
         GIT_BRANCH = 'master'           // change to 'main' if needed
     }
@@ -258,56 +258,91 @@ pipeline {
             steps { bat 'npm test -- --watchAll=false --passWithNoTests' }
         }
 
+        stage('Stop & Remove Docker Container') {
+            steps {
+                script {
+                    // Stop the container if it's running
+                    sh """
+                        if [ \$(docker ps -q -f name=${CONTAINER_NAME}) ]; then
+                            echo "Stopping container ${CONTAINER_NAME}..."
+                            docker stop ${CONTAINER_NAME}
+                        fi
+
+                        if [ \$(docker ps -aq -f name=${CONTAINER_NAME}) ]; then
+                            echo "Removing container ${CONTAINER_NAME}..."
+                            docker rm ${CONTAINER_NAME}
+                        fi
+                    """
+                }
+            }
+        }
+
+
+        stage('Remove Docker Image') {
+            steps {
+                script {
+                    // Remove the image if it exists
+                    sh """
+                        if [ \$(docker images -q ${IMAGE_NAME}) ]; then
+                            echo "Removing image ${IMAGE_NAME}..."
+                            docker rmi -f ${IMAGE_NAME}
+                        fi
+                    """
+                }
+            }
+        }
+
+
         // Containerization (multi-stage build uses its own Node anyway)
         //docker build -f Dockerfile.dev -t reactapps1 .
         
         
-        stage('Docker Build Image') {
+        // stage('Docker Build Image') {
 
-            steps {
-              // bat """
-                // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-                              // docker build -t %IMAGE_NAME%:latest .
-                // """
-                // bat """
-                // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
-                // """
-                bat """
-                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-                """
-            }
-        } 
+        //     steps {
+        //       // bat """
+        //         // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+        //                       // docker build -t %IMAGE_NAME%:latest .
+        //         // """
+        //         // bat """
+        //         // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
+        //         // """
+        //         bat """
+        //             docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+        //         """
+        //     }
+        // } 
 
-        stage('Deploy (Replace Container)') {
-            when { branch env.GIT_BRANCH } // only deploy on main branch
-            steps {
-                // Stop & remove old container if present; ignore errors if not running
-                // bat 'docker stop %APP_NAME% || echo "Container not running"'
-                // bat 'docker rm %APP_NAME% || echo "Container not found"'
+    //     stage('Deploy (Replace Container)') {
+    //         when { branch env.GIT_BRANCH } // only deploy on main branch
+    //         steps {
+    //             // Stop & remove old container if present; ignore errors if not running
+    //             // bat 'docker stop %APP_NAME% || echo "Container not running"'
+    //             // bat 'docker rm %APP_NAME% || echo "Container not found"'
 
-                // Run fresh container on port 80
-                // bat """
-                // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
-                //docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
-                // """
-                // bat """ 
-                // docker run -it --name %APP_NAME% -p 3000:3000 %IMAGE_NAME%:latest
-                // """
+    //             // Run fresh container on port 80
+    //             // bat """
+    //             // docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+    //             //docker run -d -p %RUN_PORT%:80 --name %APP_NAME% %IMAGE_NAME%:latest
+    //             // """
+    //             // bat """ 
+    //             // docker run -it --name %APP_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+    //             // """
 
-                // Optional: clean dangling images to save disk
-                // bat 'docker image prune -f || echo "prune skipped"'
+    //             // Optional: clean dangling images to save disk
+    //             // bat 'docker image prune -f || echo "prune skipped"'
 
-                bat 'docker stop %APP_NAME% || echo "Container not running"'
-                bat 'docker rm %APP_NAME% || echo "Container not found"'
+    //             bat 'docker stop %CONTAINER_NAME% || echo "Container not running"'
+    //             bat 'docker rm %CONTAINER_NAME% || echo "Container not found"'
 
-                bat """
-                    docker run -d --name %APP_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
-                """
+    //             bat """
+    //                 docker run -d --name %CONTAINER_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
+    //             """
 
-                bat 'docker image prune -f || echo "prune skipped"'
-            }
-        }
-    }
+    //             bat 'docker image prune -f || echo "prune skipped"'
+    //         }
+    //     }
+    // }
 
     post {
         success {
