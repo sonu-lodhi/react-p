@@ -299,29 +299,30 @@ pipeline {
         }
 
 
-        // stage('Docker Build Image') {
-        //     steps {
-        //         script {
-        //             bat """
-        //             echo Building new Docker image...
-        //             docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-        //             """
-        //         }
-        //     }
-        // }
+        stage('Docker Build Image') {
+            steps {
+                script {
+                    bat """
+                    echo Building new Docker image...
+                    docker build -f Dockerfile -t %IMAGE_NAME% .
+                    """
+                }
+            }
+        }
 
         stage('Deploy (Replace Container)') {
-            when { branch env.GIT_BRANCH } // only deploy on main branch
+            //when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
               bat """ 
-                docker run -d --restart always --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
+                docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%
                 """
                  }
         }
 
-
+        //docker run -d --restart always --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%:latest
         // Containerization (multi-stage build uses its own Node anyway)
         //docker build -f Dockerfile.dev -t reactapps1 .
+        //docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
         
         
         // stage('Docker Build Image') {
