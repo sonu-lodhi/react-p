@@ -296,21 +296,21 @@ pipeline {
         //docker build -f Dockerfile.dev -t reactapps1 .
         
         
-        // stage('Docker Build Image') {
+        stage('Docker Build Image') {
 
-        //     steps {
-        //       // bat """
-        //         // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-        //                       // docker build -t %IMAGE_NAME%:latest .
-        //         // """
-        //         // bat """
-        //         // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
-        //         // """
-        //         bat """
-        //             docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
-        //         """
-        //     }
-        // } 
+            steps {
+              // bat """
+                // docker build -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+                              // docker build -t %IMAGE_NAME%:latest .
+                // """
+                // bat """
+                // docker build -f Dockerfile -t %IMAGE_NAME%:latest .
+                // """
+                bat """
+                    docker build --no-cache -t %IMAGE_NAME%:%BUILD_NUMBER% -t %IMAGE_NAME%:latest .
+                """
+            }
+        } 
 
     //     stage('Deploy (Replace Container)') {
     //         when { branch env.GIT_BRANCH } // only deploy on main branch
