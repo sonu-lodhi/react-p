@@ -5,7 +5,7 @@ function About() {
   return (
     <section id='About' className="container mx-auto px-4 py-8 sm:flex justify-between sm:mt-16">
       <div className='sm:w-2/3 animate-[left_1s_ease-in-out]'>
-      <h2 className="text-4xl font-bold mb-4 text-blue-300 gradientText">Sumesh Lodhi</h2>
+      <h2 className="text-4xl font-bold mb-4 text-blue-300 gradientText">Ramsevak Lodhi</h2>
       <p className="mb-4 text-xl">
       Hi there, my name is Ritesh Raghuwanshi and I am a frontend developer with 3 months of experience working at Qwings India. I am passionate about building responsive and intuitive web applications that provide a seamless user experience Apart from technical skills, I am a quick learner and a good team player, always open to learning new technologies and approaches. I am also an effective communicator and can explain technical concepts to non-technical stakeholders.
       </p>
