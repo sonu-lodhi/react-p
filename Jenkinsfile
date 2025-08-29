@@ -305,7 +305,7 @@ pipeline {
                     bat """
                     echo Building new Docker image...
                     set DOCKER_BUILDKIT=0
-                    docker --no-cache build -f Dockerfile -t %IMAGE_NAME% .
+                    docker build --no-cache -f Dockerfile -t %IMAGE_NAME% .
                     """
                 }
             }
