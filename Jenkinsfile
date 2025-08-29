@@ -304,7 +304,7 @@ pipeline {
                 script {
                     bat """
                     echo Building new Docker image...
-                    docker build -f Dockerfile -t %IMAGE_NAME% .
+                    set DOCKER_BUILDKIT=0 && docker --no-cache build -f Dockerfile -t %IMAGE_NAME% .
                     """
                 }
             }
@@ -313,9 +313,10 @@ pipeline {
         stage('Deploy (Replace Container)') {
             //when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
-              bat """ 
+              bat """
                 docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%
                 """
+                bat 'docker image prune -f || echo "prune skipped"'
                  }
         }
 
@@ -367,7 +368,7 @@ pipeline {
                 //     docker run -d --name %CONTAINER_NAME% -p %RUN_PORT%:80 %IMAGE_NAME%:latest
                 // """
 
-    //             bat 'docker image prune -f || echo "prune skipped"'
+               
         //     }
         // }
      }
