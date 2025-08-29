@@ -304,7 +304,8 @@ pipeline {
                 script {
                     bat """
                     echo Building new Docker image...
-                    set DOCKER_BUILDKIT=0 && docker --no-cache build -f Dockerfile -t %IMAGE_NAME% .
+                    set DOCKER_BUILDKIT=0
+                    docker --no-cache build -f Dockerfile -t %IMAGE_NAME% .
                     """
                 }
             }
@@ -314,9 +315,15 @@ pipeline {
             //when { branch env.GIT_BRANCH } // only deploy on main branch
             steps {
               bat """
+                echo Stopping and removing old container if exists...
+                docker stop %CONTAINER_NAME% || echo "No running container"
+                docker rm %CONTAINER_NAME% || echo "No container to remove"
+                
+                echo Starting new container...
                 docker run -d --name %CONTAINER_NAME% -p 3000:3000 %IMAGE_NAME%
                 """
-                bat 'docker image prune -f || echo "prune skipped"'
+                // cleanup dangling images
+                 bat 'docker image prune -f || echo "prune skipped"'
                  }
         }
 
