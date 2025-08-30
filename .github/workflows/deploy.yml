@@ -24,11 +24,25 @@ jobs:
           chmod +x node_modules/.bin/react-scripts
           CI=false npm run build
 
-      - name: Deploy to Server
+      # 1. Copy build to home dir on server
+      - name: Upload Build Files
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST}}
+          host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/*"
-          target: "/var/www/react-app"
+          target: "~/react-app-temp"
+
+      # 2. Move files into /var/www/react-app with sudo
+      - name: Deploy to Nginx Directory
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo mkdir -p /var/www/react-app
+            sudo rm -rf /var/www/react-app/*
+            sudo mv ~/react-app-temp/* /var/www/react-app/
+            sudo systemctl reload nginx
